@@ -6,22 +6,34 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Nancy.Hosting.Self;
+using Nancy;
 
 namespace RoyNet.LoginServer
 {
-    class Program
+    class Program : DefaultNancyBootstrapper
     {
         public static LoginServerConfig Config { get; private set; }
         public static NancyHost Host { get; private set; }
         static void Main(string[] args)
         {
+
+            HostConfiguration hostConfigs = new HostConfiguration();
+            hostConfigs.UrlReservations.CreateAutomatically = true;
+
+
             var ips = GetIP();
             Config = ConfigurationManager.GetSection("loginServer") as LoginServerConfig;
             Debug.Assert(Config != null, "Config != null");
 
+
+            
+
             var uris = ips.Select(ip => new Uri("http://" + ip + ":" + Config.Port)).ToList();
             uris.Add(new Uri("http://127.0.0.1:"+Config.Port));
-            Host = new NancyHost(uris.ToArray());
+           // Host = new NancyHost(uris.ToArray());
+            Host = new NancyHost(new Uri("http://127.0.0.1:8080"), new DefaultNancyBootstrapper(), hostConfigs);
+            //Host = new NancyHost(uris.ToArray(), new DefaultNancyBootstrapper(), hostConfigs);
+            
             Host.Start();
             Console.WriteLine("你的服务器已经启动");
             Console.ReadLine();//可以在这里写一个循环，用于运行中的命令行控制。
