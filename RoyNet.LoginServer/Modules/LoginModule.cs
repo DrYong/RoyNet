@@ -8,11 +8,12 @@ namespace RoyNet.LoginServer
     {
         public LoginModule()
         {
+            //call in browse  http://127.0.0.1:8080/login/u1/p1
             Get["/login/{uname}/{pwd}"] = p =>
             {
                 using (var conn = ConnectionProvider.Connection)
                 {
-                    string uid = conn.Query<string>("select uid from Account where username=@username and password=md5(@password)", new
+                    string uid = conn.Query<string>("select uid from Account where username=@username and password=@password", new
                     {
                         username = p.uname,
                         password = p.pwd
@@ -29,6 +30,9 @@ namespace RoyNet.LoginServer
                 }
             };
 
+            //in table account, there are username, password, uid (should be auto increment)
+
+            //http://127.0.0.1:8080/reg/u6/p6
             Get["/reg/{uname}/{pwd}"] = p =>
             {
                 using (var conn = ConnectionProvider.Connection)
